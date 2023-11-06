@@ -75,6 +75,12 @@ def get_team_data(team, df):
 df_team = get_team_data(team, df_no_overtime)
 df_team = df_team.copy()
 
+# add column to name the opponent team
+df_team.loc[:,'opponent'] = df_team.apply(lambda row: row['away_team'] if row['home_team'] == team else row['home_team'], axis=1)
+
+# add column for team
+df_team.loc[:,'team'] = team
+
 df_team.loc[:,'game_seconds_elapsed'] = df_team.apply(lambda row: 3600 - row['game_seconds_remaining'], axis=1)
 df_team.loc[:,'season_seconds_elapsed'] = df_team.apply(lambda row: (row['week'] - 1) * 3600 + row['game_seconds_elapsed'], axis = 1)
 
@@ -159,7 +165,9 @@ cols_for_writing = [
     'points_allowed',
     'play_differential',
     'cumulative_play_differential',
-    'score_differential'
+    'score_differential',
+    'team',
+    'opponent'
 ]
 
 df_team[cols_for_writing].to_csv(f'data/working/{team}_pbp.csv', index=False)
